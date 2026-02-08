@@ -59,7 +59,6 @@ function checkAuth() {
 
 // Показать UI для авторизованных
 function showAuthenticatedUI() {
-  document.getElementById('navAuth').style.display = 'none';
   document.getElementById('userBox').style.display = 'flex';
   document.getElementById('usernameLabel').textContent = currentUser.username;
   
@@ -83,7 +82,6 @@ function showAuthenticatedUI() {
 
 // Показать UI для неавторизованных
 function showUnauthenticatedUI() {
-  document.getElementById('navAuth').style.display = 'block';
   document.getElementById('userBox').style.display = 'none';
   document.getElementById('welcomeSection').style.display = 'flex';
   document.getElementById('createTraceSection').style.display = 'none';
