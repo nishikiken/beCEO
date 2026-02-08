@@ -190,7 +190,8 @@ function showUnauthenticatedUI() {
   const userBox = document.getElementById('userBox');
   userBox.classList.remove('show');
   
-  document.getElementById('welcomeSection').style.display = 'flex';
+  // Скрываем welcome section когда пользователь не авторизован
+  document.getElementById('welcomeSection').style.display = 'none';
   document.getElementById('createTraceSection').style.display = 'none';
 }
 
@@ -265,6 +266,11 @@ function handleGoogleCallback(response) {
       const userData = savedGoogleUsers[userInfo.sub];
       currentUser = userData;
       localStorage.setItem('beceo_user', JSON.stringify(currentUser));
+      
+      // Закрываем модалки
+      closeModal('loginModal');
+      closeModal('registerModal');
+      
       showAuthenticatedUI();
       notify('✅ С возвращением, ' + userData.username + '!');
     } else {
@@ -280,6 +286,10 @@ function handleGoogleCallback(response) {
       
       // Сохраняем временные данные
       sessionStorage.setItem('temp_google_user', JSON.stringify(tempUser));
+      
+      // Закрываем модалки входа/регистрации
+      closeModal('loginModal');
+      closeModal('registerModal');
       
       // Открываем модалку выбора username
       openModal('usernameModal');
@@ -398,6 +408,10 @@ function logout() {
   currentUser = null;
   showUnauthenticatedUI();
   notify('👋 Вы вышли из аккаунта');
+  
+  // Перезагружаем страницу чтобы показать splash screen снова
+  sessionStorage.removeItem('splash_seen');
+  location.reload();
 }
 
 // Отправить след
