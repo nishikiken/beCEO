@@ -29,13 +29,9 @@
       <div class="welcome-icon">🚀</div>
       <h2>Оставь свой цифровой след</h2>
       <p>Одна фраза. Один шанс. Навсегда.</p>
-      <button onclick="loginWithTikTok()" class="cta-btn">
-        🎵 Начать с TikTok
-      </button>
-      <div class="or-divider">или</div>
       <div class="auth-buttons">
-        <button onclick="openModal('loginModal')" class="secondary-btn">Войти</button>
-        <button onclick="openModal('registerModal')" class="secondary-btn">Регистрация</button>
+        <button onclick="openModal('loginModal')" class="cta-btn">Войти</button>
+        <button onclick="openModal('registerModal')" class="cta-btn">Регистрация</button>
       </div>
       <div class="stats-preview">
         <div class="stat-item">
@@ -97,6 +93,10 @@
     <input id="loginUser" placeholder="Логин">
     <input id="loginPass" type="password" placeholder="Пароль">
     <button onclick="login()">Войти</button>
+    <div class="modal-divider">или</div>
+    <button onclick="loginWithTikTok()" class="tiktok-modal-btn">
+      🎵 Войти через TikTok
+    </button>
   </div>
 </div>
 
@@ -112,6 +112,10 @@
     <input id="registerUser" placeholder="Логин">
     <input id="registerPass" type="password" placeholder="Пароль">
     <button onclick="register()">Создать аккаунт</button>
+    <div class="modal-divider">или</div>
+    <button onclick="loginWithTikTok()" class="tiktok-modal-btn">
+      🎵 Регистрация через TikTok
+    </button>
   </div>
 </div>
 
