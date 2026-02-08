@@ -1017,11 +1017,15 @@ footer {
 }
 
 .ban-content h1 {
-  font-size: 48px;
-  font-weight: 900;
+  font-family: 'Fortnite', 'Rajdhani', sans-serif;
+  font-size: 56px;
+  font-weight: normal;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: #ef4444;
   margin-bottom: 20px;
   text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8));
 }
 
 .ban-content p {
