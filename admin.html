@@ -302,7 +302,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Загрузка статистики
 async function loadStats() {
   try {
-    const { data, error } = await supabase.rpc('get_stats');
+    const { data, error } = await supabase.rpc('beceo_get_stats');
     if (error) throw error;
     
     document.getElementById('totalUsers').textContent = data.total_users || 0;
@@ -318,7 +318,7 @@ async function loadStats() {
 async function loadTraces() {
   try {
     const { data, error } = await supabase
-      .from('traces')
+      .from('beceo_traces')
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -352,7 +352,7 @@ async function loadTraces() {
 async function loadUsers() {
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from('beceo_users')
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -391,7 +391,7 @@ async function deleteTrace(id) {
   
   try {
     const { error } = await supabase
-      .from('traces')
+      .from('beceo_traces')
       .delete()
       .eq('id', id);
     
@@ -410,7 +410,7 @@ async function banUser(id) {
   
   try {
     const { error } = await supabase
-      .from('users')
+      .from('beceo_users')
       .update({ is_banned: true })
       .eq('id', id);
     
@@ -427,7 +427,7 @@ async function banUser(id) {
 async function unbanUser(id) {
   try {
     const { error } = await supabase
-      .from('users')
+      .from('beceo_users')
       .update({ is_banned: false })
       .eq('id', id);
     
