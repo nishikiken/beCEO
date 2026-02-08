@@ -63,7 +63,7 @@ CREATE POLICY "Пользователи могут создавать свои �
   ON beceo_users FOR INSERT
   WITH CHECK (true);
 
-CREATE POLICY "Пользователи могут обновлять свои данные BE CEO"
+CREATE POLICY "Все могут обновлять данные BE CEO"
   ON beceo_users FOR UPDATE
   USING (true);
 
@@ -76,14 +76,9 @@ CREATE POLICY "Все могут создавать следы BE CEO"
   ON beceo_traces FOR INSERT
   WITH CHECK (true);
 
-CREATE POLICY "Админы могут удалять любые следы BE CEO"
+CREATE POLICY "Все могут удалять следы BE CEO"
   ON beceo_traces FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM beceo_users
-      WHERE beceo_users.is_admin = true
-    )
-  );
+  USING (true);
 
 -- Политики для beceo_likes
 CREATE POLICY "Все могут читать лайки BE CEO"
