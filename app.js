@@ -4,6 +4,9 @@ let traces = [];
 let currentSort = 'recent';
 let splashShown = false;
 
+// Google OAuth Client ID
+const GOOGLE_CLIENT_ID = '339573359277-ift70s7dso8tc0k070bibubj3k1lmc3v.apps.googleusercontent.com';
+
 // Демо данные (потом заменим на реальную БД)
 const demoTraces = [
   {
@@ -37,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTraces();
   updateStats();
   checkAuth();
+  
+  // Инициализация Google Sign-In
+  initGoogleSignIn();
   
   // Проверяем, показывали ли splash screen
   const splashSeen = sessionStorage.getItem('splash_seen');
@@ -199,32 +205,44 @@ function closeModal(id) {
   if (tg) tg.HapticFeedback.impactOccurred('light');
 }
 
-// Авторизация через Google
-function loginWithGoogle() {
-  closeModal('loginModal');
-  closeModal('registerModal');
-  
-  notify('🔄 Подключение к Google...');
-  
-  // Демо: симуляция Google OAuth
-  setTimeout(() => {
-    // Проверяем, есть ли уже сохраненный Google-пользователь
-    const savedGoogleUser = localStorage.getItem('beceo_google_user');
+// Инициализация Google Sign-In
+function initGoogleSignIn() {
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCallback,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+  }
+}
+
+// Обработчик Google OAuth callback
+function handleGoogleCallback(response) {
+  try {
+    // Декодируем JWT токен
+    const userInfo = parseJwt(response.credential);
     
-    if (savedGoogleUser) {
+    console.log('Google User Info:', userInfo);
+    
+    // Проверяем, есть ли уже username для этого Google ID
+    const savedGoogleUsers = JSON.parse(localStorage.getItem('beceo_google_users') || '{}');
+    
+    if (savedGoogleUsers[userInfo.sub]) {
       // Пользователь уже регистрировался
-      const userData = JSON.parse(savedGoogleUser);
+      const userData = savedGoogleUsers[userInfo.sub];
       currentUser = userData;
       localStorage.setItem('beceo_user', JSON.stringify(currentUser));
       showAuthenticatedUI();
       notify('✅ С возвращением, ' + userData.username + '!');
     } else {
       // Новый пользователь - нужно выбрать username
-      const googleId = 'google_' + Date.now();
       const tempUser = {
-        id: googleId,
-        googleEmail: 'user@gmail.com', // В реальности придет от Google
-        avatar: null,
+        id: userInfo.sub,
+        googleEmail: userInfo.email,
+        googleName: userInfo.name,
+        googlePicture: userInfo.picture,
+        avatar: userInfo.picture,
         username: null
       };
       
@@ -234,7 +252,39 @@ function loginWithGoogle() {
       // Открываем модалку выбора username
       openModal('usernameModal');
     }
-  }, 1500);
+  } catch (error) {
+    console.error('Google Sign-In error:', error);
+    notify('❌ Ошибка авторизации через Google');
+  }
+}
+
+// Парсинг JWT токена
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+// Авторизация через Google
+function loginWithGoogle() {
+  closeModal('loginModal');
+  closeModal('registerModal');
+  
+  // Запускаем Google Sign-In
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+        notify('⚠️ Не удалось открыть окно Google. Попробуй еще раз.');
+      } else if (notification.isSkippedMoment()) {
+        notify('⚠️ Авторизация отменена');
+      }
+    });
+  } else {
+    notify('❌ Google Sign-In не загружен. Перезагрузи страницу.');
+  }
 }
 
 // Сохранение username после Google OAuth
@@ -277,7 +327,11 @@ function saveUsername() {
   // Сохраняем
   savedUsers.push(username.toLowerCase());
   localStorage.setItem('beceo_all_usernames', JSON.stringify(savedUsers));
-  localStorage.setItem('beceo_google_user', JSON.stringify(currentUser));
+  
+  const savedGoogleUsers = JSON.parse(localStorage.getItem('beceo_google_users') || '{}');
+  savedGoogleUsers[tempUser.id] = currentUser;
+  localStorage.setItem('beceo_google_users', JSON.stringify(savedGoogleUsers));
+  
   localStorage.setItem('beceo_user', JSON.stringify(currentUser));
   sessionStorage.removeItem('temp_google_user');
   
