@@ -216,6 +216,28 @@ function initGoogleSignIn() {
         cancel_on_tap_outside: true
       });
       console.log('Google Sign-In initialized successfully');
+      
+      // Рендерим кнопки Google (опционально)
+      const wrapper1 = document.getElementById('googleButtonWrapper');
+      const wrapper2 = document.getElementById('googleButtonWrapper2');
+      
+      if (wrapper1) {
+        google.accounts.id.renderButton(wrapper1, {
+          theme: 'filled_blue',
+          size: 'large',
+          text: 'continue_with',
+          width: 300
+        });
+      }
+      
+      if (wrapper2) {
+        google.accounts.id.renderButton(wrapper2, {
+          theme: 'filled_blue',
+          size: 'large',
+          text: 'continue_with',
+          width: 300
+        });
+      }
     } catch (error) {
       console.error('Error initializing Google Sign-In:', error);
     }
