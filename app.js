@@ -1,3 +1,17 @@
+// ===== SUPABASE КОНФИГУРАЦИЯ =====
+// ЗАМЕНИ НА СВОИ ДАННЫЕ!
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+// Инициализация Supabase
+let supabase = null;
+if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✅ Supabase подключен');
+} else {
+  console.warn('⚠️ Supabase не настроен! Открой app.js и замени YOUR_SUPABASE_URL и YOUR_SUPABASE_ANON_KEY');
+}
+
 // Состояние приложения
 let currentUser = null;
 let traces = [];
@@ -36,8 +50,8 @@ const demoTraces = [
 ];
 
 // Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  loadTraces();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadTraces();
   updateStats();
   checkAuth();
   
@@ -355,7 +369,7 @@ function loginWithGoogle() {
 }
 
 // Сохранение username после Google OAuth
-function saveUsername() {
+async function saveUsername() {
   const username = document.getElementById('usernameInput').value.trim();
   
   if (!username) {
@@ -373,13 +387,6 @@ function saveUsername() {
     return;
   }
   
-  // Проверяем, не занят ли username
-  const savedUsers = JSON.parse(localStorage.getItem('beceo_all_usernames') || '[]');
-  if (savedUsers.includes(username.toLowerCase())) {
-    notify('❌ Этот username уже занят');
-    return;
-  }
-  
   // Получаем временные данные Google
   const tempUser = JSON.parse(sessionStorage.getItem('temp_google_user'));
   
@@ -392,7 +399,46 @@ function saveUsername() {
     avatar: tempUser.googlePicture
   };
   
-  // Сохраняем
+  // Сохраняем в Supabase
+  if (supabase) {
+    try {
+      // Проверяем, не занят ли username
+      const { data: existingUser } = await supabase
+        .from('beceo_users')
+        .select('username')
+        .eq('username', username)
+        .single();
+      
+      if (existingUser) {
+        notify('❌ Этот username уже занят');
+        return;
+      }
+      
+      // Добавляем пользователя в базу
+      const { error } = await supabase
+        .from('beceo_users')
+        .insert({
+          id: tempUser.id,
+          google_id: tempUser.id,
+          username: username,
+          email: tempUser.googleEmail,
+          avatar_url: tempUser.googlePicture
+        });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        notify('❌ Ошибка сохранения: ' + error.message);
+        return;
+      }
+      
+      console.log('✅ Пользователь добавлен в Supabase');
+    } catch (error) {
+      console.error('Error saving to Supabase:', error);
+    }
+  }
+  
+  // Сохраняем локально (для совместимости)
+  const savedUsers = JSON.parse(localStorage.getItem('beceo_all_usernames') || '[]');
   savedUsers.push(username.toLowerCase());
   localStorage.setItem('beceo_all_usernames', JSON.stringify(savedUsers));
   
@@ -421,7 +467,7 @@ function logout() {
 }
 
 // Отправить след
-function submitTrace() {
+async function submitTrace() {
   const message = document.getElementById('traceMessage').value.trim();
   
   if (!message) {
@@ -443,9 +489,32 @@ function submitTrace() {
     likes: 0
   };
   
+  // Сохраняем в Supabase
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from('beceo_traces')
+        .insert({
+          user_id: currentUser.id,
+          username: currentUser.username,
+          message: message
+        });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        notify('❌ Ошибка сохранения: ' + error.message);
+        return;
+      }
+      
+      console.log('✅ След добавлен в Supabase');
+    } catch (error) {
+      console.error('Error saving trace:', error);
+    }
+  }
+  
   traces.unshift(newTrace);
   saveTraces();
-  renderTraces();
+  await renderTraces();
   updateStats();
   
   document.getElementById('createTraceSection').style.display = 'none';
@@ -458,7 +527,36 @@ function submitTrace() {
 }
 
 // Загрузка следов
-function loadTraces() {
+async function loadTraces() {
+  // Загружаем из Supabase
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('beceo_traces')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+      } else if (data && data.length > 0) {
+        traces = data.map(t => ({
+          id: t.id,
+          username: t.username,
+          avatar: '👤', // Можно добавить аватары позже
+          message: t.message,
+          date: new Date(t.created_at),
+          likes: t.likes || 0
+        }));
+        console.log(`✅ Загружено ${traces.length} следов из Supabase`);
+        await renderTraces();
+        return;
+      }
+    } catch (error) {
+      console.error('Error loading from Supabase:', error);
+    }
+  }
+  
+  // Fallback: загружаем из localStorage
   const saved = localStorage.getItem('beceo_traces');
   if (saved) {
     traces = JSON.parse(saved).map(t => ({
@@ -469,7 +567,7 @@ function loadTraces() {
     traces = [...demoTraces];
     saveTraces();
   }
-  renderTraces();
+  await renderTraces();
 }
 
 // Сохранение следов
@@ -478,7 +576,7 @@ function saveTraces() {
 }
 
 // Отрисовка следов
-function renderTraces() {
+async function renderTraces() {
   const grid = document.getElementById('tracesGrid');
   
   // Сортировка
@@ -510,7 +608,7 @@ function renderTraces() {
       </div>
       <div class="trace-message">${escapeHtml(trace.message)}</div>
       <div class="trace-footer">
-        <button class="like-btn ${likedClass}" onclick="toggleLike(${trace.id})">
+        <button class="like-btn ${likedClass}" onclick="toggleLike('${trace.id}')">
           ${isLiked ? '❤️' : '🤍'} <span>${trace.likes}</span>
         </button>
         <div class="like-count">${trace.likes} ${pluralize(trace.likes, 'лайк', 'лайка', 'лайков')}</div>
@@ -571,7 +669,7 @@ function saveLikes(likes) {
 }
 
 // Сортировка
-function sortBy(type) {
+async function sortBy(type) {
   currentSort = type;
   
   // Обновить кнопки
@@ -580,7 +678,7 @@ function sortBy(type) {
   });
   event.target.classList.add('active');
   
-  renderTraces();
+  await renderTraces();
 }
 
 // Обновление статистики
