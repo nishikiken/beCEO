@@ -5,7 +5,7 @@ let currentSort = 'recent';
 let splashShown = false;
 
 // Google OAuth Client ID
-const GOOGLE_CLIENT_ID = '339573359277-ift70s7dso8tc0k070bibubj3k1lmc3v.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '339573359277-jft70s7dso8tc0k070bibubj3k1lmc3v.apps.googleusercontent.com';
 
 // Демо данные (потом заменим на реальную БД)
 const demoTraces = [
