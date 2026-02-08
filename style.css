@@ -258,8 +258,11 @@ main {
   flex: 1;
   padding: 40px 24px;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* ===== WELCOME SECTION ===== */
@@ -269,6 +272,7 @@ main {
   justify-content: center;
   min-height: 500px;
   animation: fadeIn .6s ease;
+  width: 100%;
 }
 
 .welcome-content {
@@ -401,6 +405,7 @@ main {
 /* ===== CREATE TRACE SECTION ===== */
 .create-trace-section {
   animation: fadeIn .6s ease;
+  width: 100%;
 }
 
 .create-box {
@@ -501,6 +506,7 @@ main {
 /* ===== TRACES SECTION ===== */
 .traces-section {
   animation: fadeIn .6s ease;
+  width: 100%;
 }
 
 .section-header {

@@ -42,6 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const splashSeen = sessionStorage.getItem('splash_seen');
   if (!splashSeen) {
     showSplashScreen();
+    // Скрываем основной контент пока показывается splash
+    document.getElementById('welcomeSection').style.display = 'none';
+    document.getElementById('createTraceSection').style.display = 'none';
+    document.getElementById('tracesSection').style.display = 'none';
   } else {
     document.getElementById('splashScreen').style.display = 'none';
   }
@@ -86,6 +90,8 @@ function showSplashScreen() {
       
       setTimeout(() => {
         splashScreen.style.display = 'none';
+        // Показываем основной контент
+        document.getElementById('tracesSection').style.display = 'block';
         openModal('registerModal');
       }, 1000);
     }, 1100);
