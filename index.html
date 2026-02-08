@@ -23,8 +23,17 @@
 </header>
 
 <main>
+  <!-- Splash Screen (первый экран) -->
+  <section class="splash-screen" id="splashScreen">
+    <div class="traces-background" id="tracesBackground"></div>
+    <div class="splash-overlay">
+      <h1 class="splash-title" id="splashTitle">Оставь свой цифровой след прямо сейчас.</h1>
+      <p class="splash-hint" id="splashHint">Жми на экран</p>
+    </div>
+  </section>
+
   <!-- Приветственный экран для неавторизованных -->
-  <section class="welcome-section" id="welcomeSection">
+  <section class="welcome-section" id="welcomeSection" style="display: none;"></section>
     <div class="welcome-content">
       <div class="welcome-icon">🚀</div>
       <h2>Оставь свой цифровой след</h2>
@@ -94,8 +103,8 @@
     <input id="loginPass" type="password" placeholder="Пароль">
     <button onclick="login()">Войти</button>
     <div class="modal-divider">или</div>
-    <button onclick="loginWithTikTok()" class="tiktok-modal-btn">
-      🎵 Войти через TikTok
+    <button onclick="loginWithGoogle()" class="google-modal-btn">
+      🔐 Войти через Google
     </button>
   </div>
 </div>
@@ -113,8 +122,8 @@
     <input id="registerPass" type="password" placeholder="Пароль">
     <button onclick="register()">Создать аккаунт</button>
     <div class="modal-divider">или</div>
-    <button onclick="loginWithTikTok()" class="tiktok-modal-btn">
-      🎵 Регистрация через TikTok
+    <button onclick="loginWithGoogle()" class="google-modal-btn">
+      🔐 Регистрация через Google
     </button>
   </div>
 </div>

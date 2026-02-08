@@ -2,6 +2,7 @@
 let currentUser = null;
 let traces = [];
 let currentSort = 'recent';
+let splashShown = false;
 
 // Демо данные (потом заменим на реальную БД)
 const demoTraces = [
@@ -37,6 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   checkAuth();
   
+  // Проверяем, показывали ли splash screen
+  const splashSeen = sessionStorage.getItem('splash_seen');
+  if (!splashSeen) {
+    showSplashScreen();
+  } else {
+    document.getElementById('splashScreen').style.display = 'none';
+  }
+  
   // Счётчик символов
   const textarea = document.getElementById('traceMessage');
   if (textarea) {
@@ -45,6 +54,77 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Splash Screen
+function showSplashScreen() {
+  const splashScreen = document.getElementById('splashScreen');
+  const tracesBackground = document.getElementById('tracesBackground');
+  
+  // Создаём плавающие следы на фоне
+  createFloatingTraces(tracesBackground);
+  
+  // Обработчик клика
+  splashScreen.addEventListener('click', () => {
+    if (splashShown) return;
+    splashShown = true;
+    
+    const title = document.getElementById('splashTitle');
+    const hint = document.getElementById('splashHint');
+    
+    // Скрываем подсказку
+    hint.classList.add('hide');
+    
+    // Анимация "пробития 4-й стены"
+    setTimeout(() => {
+      title.classList.add('zoom');
+    }, 300);
+    
+    // Скрываем splash и показываем регистрацию
+    setTimeout(() => {
+      splashScreen.classList.add('hide');
+      sessionStorage.setItem('splash_seen', 'true');
+      
+      setTimeout(() => {
+        splashScreen.style.display = 'none';
+        openModal('registerModal');
+      }, 1000);
+    }, 1100);
+  });
+}
+
+// Создание плавающих следов
+function createFloatingTraces(container) {
+  const placeholders = [
+    { username: 'elonmusk', message: 'Мечтай о невозможном, работай над реальным.' },
+    { username: 'stevejobs', message: 'Единственный способ делать великую работу — любить то, что ты делаешь.' },
+    { username: 'billgates', message: 'Успех — плохой учитель.' },
+    { username: 'markzuckerberg', message: 'Двигайся быстро и ломай стереотипы.' },
+    { username: 'jeffbezos', message: 'Твой бренд — это то, что люди говорят о тебе, когда тебя нет в комнате.' }
+  ];
+  
+  // Создаём 8 следов с разными задержками
+  for (let i = 0; i < 8; i++) {
+    const trace = placeholders[i % placeholders.length];
+    const card = document.createElement('div');
+    card.className = 'trace-float';
+    card.style.left = `${Math.random() * 80 + 10}%`;
+    card.style.animationDelay = `${i * 2}s`;
+    
+    card.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(56, 189, 248, 0.2); display: flex; align-items: center; justify-content: center; font-size: 18px;">
+          👤
+        </div>
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: #38bdf8;">@${trace.username}</div>
+        </div>
+      </div>
+      <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8);">${trace.message}</div>
+    `;
+    
+    container.appendChild(card);
+  }
+}
 
 // Проверка авторизации
 function checkAuth() {
@@ -191,22 +271,24 @@ function register() {
   notify('🎉 Аккаунт создан! Добро пожаловать!');
 }
 
-// Авторизация через TikTok (заглушка)
-function loginWithTikTok() {
-  notify('🚧 Авторизация через TikTok находится в разработке');
+// Авторизация через Google (заглушка)
+function loginWithGoogle() {
+  notify('🚧 Авторизация через Google находится в разработке');
+  closeModal('loginModal');
+  closeModal('registerModal');
   
   // Демо авторизация для тестирования
   setTimeout(() => {
     const demoUser = {
       id: Date.now(),
-      username: 'demo_user_' + Math.floor(Math.random() * 1000),
+      username: 'google_user_' + Math.floor(Math.random() * 1000),
       avatar: null
     };
     
     currentUser = demoUser;
     localStorage.setItem('beceo_user', JSON.stringify(demoUser));
     showAuthenticatedUI();
-    notify('✅ Вы успешно вошли как ' + demoUser.username);
+    notify('✅ Вы успешно вошли через Google');
   }, 1500);
 }
 
@@ -481,7 +563,7 @@ window.closeModal = closeModal;
 window.login = login;
 window.register = register;
 window.logout = logout;
-window.loginWithTikTok = loginWithTikTok;
+window.loginWithGoogle = loginWithGoogle;
 
 // Экранирование HTML
 function escapeHtml(text) {
