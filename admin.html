@@ -302,32 +302,46 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Загрузка статистики
 async function loadStats() {
   try {
+    console.log('Загрузка статистики...');
     const { data, error } = await supabase.rpc('beceo_get_stats');
-    if (error) throw error;
+    if (error) {
+      console.error('Ошибка RPC:', error);
+      throw error;
+    }
     
+    console.log('Статистика:', data);
     document.getElementById('totalUsers').textContent = data.total_users || 0;
     document.getElementById('totalTraces').textContent = data.total_traces || 0;
     document.getElementById('totalLikes').textContent = data.total_likes || 0;
     document.getElementById('bannedUsers').textContent = data.banned_users || 0;
   } catch (error) {
     console.error('Error loading stats:', error);
+    showError('Ошибка загрузки статистики: ' + error.message);
   }
 }
 
 // Загрузка следов
 async function loadTraces() {
   try {
+    console.log('Загрузка следов...');
     const { data, error } = await supabase
       .from('beceo_traces')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      console.error('Ошибка загрузки следов:', error);
+      throw error;
+    }
     
+    console.log(`Загружено ${data.length} следов`);
     const tbody = document.getElementById('tracesBody');
     tbody.innerHTML = '';
     
-    data.forEach(trace => {
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">Пока нет следов</td></tr>';
+    } else {
+      data.forEach(trace => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${trace.username}</td>
@@ -340,28 +354,39 @@ async function loadTraces() {
       `;
       tbody.appendChild(row);
     });
+    }
     
     document.getElementById('tracesLoading').style.display = 'none';
     document.getElementById('tracesTable').style.display = 'table';
   } catch (error) {
+    console.error('Error loading traces:', error);
     showError('Ошибка загрузки следов: ' + error.message);
+    document.getElementById('tracesLoading').textContent = 'Ошибка загрузки';
   }
 }
 
 // Загрузка пользователей
 async function loadUsers() {
   try {
+    console.log('Загрузка пользователей...');
     const { data, error } = await supabase
       .from('beceo_users')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      console.error('Ошибка загрузки пользователей:', error);
+      throw error;
+    }
     
+    console.log(`Загружено ${data.length} пользователей`);
     const tbody = document.getElementById('usersBody');
     tbody.innerHTML = '';
     
-    data.forEach(user => {
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">Пока нет пользователей</td></tr>';
+    } else {
+      data.forEach(user => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${user.username}</td>
@@ -377,11 +402,14 @@ async function loadUsers() {
       `;
       tbody.appendChild(row);
     });
+    }
     
     document.getElementById('usersLoading').style.display = 'none';
     document.getElementById('usersTable').style.display = 'table';
   } catch (error) {
+    console.error('Error loading users:', error);
     showError('Ошибка загрузки пользователей: ' + error.message);
+    document.getElementById('usersLoading').textContent = 'Ошибка загрузки';
   }
 }
 
@@ -449,16 +477,28 @@ function showError(message) {
 }
 
 // Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  loadStats();
-  loadTraces();
-  loadUsers();
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🚀 Админ-панель загружается...');
+  
+  try {
+    await loadStats();
+    await loadTraces();
+    await loadUsers();
+    console.log('✅ Админ-панель загружена');
+  } catch (error) {
+    console.error('❌ Ошибка загрузки:', error);
+    showError('Ошибка загрузки данных: ' + error.message);
+  }
   
   // Обновление каждые 30 секунд
-  setInterval(() => {
-    loadStats();
-    loadTraces();
-    loadUsers();
+  setInterval(async () => {
+    try {
+      await loadStats();
+      await loadTraces();
+      await loadUsers();
+    } catch (error) {
+      console.error('Ошибка обновления:', error);
+    }
   }, 30000);
 });
 </script>

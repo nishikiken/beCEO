@@ -406,11 +406,11 @@ async function saveUsername() {
   if (supabaseClient) {
     try {
       // Проверяем, не занят ли username
-      const { data: existingUser } = await supabaseClient
+      const { data: existingUser, error: checkError } = await supabaseClient
         .from('beceo_users')
         .select('username')
         .eq('username', username)
-        .single();
+        .maybeSingle();
       
       if (existingUser) {
         notify('❌ Этот username уже занят');
@@ -429,6 +429,11 @@ async function saveUsername() {
         });
       
       if (error) {
+        // Проверяем на дубликат username (unique constraint)
+        if (error.code === '23505') {
+          notify('❌ Этот username уже занят');
+          return;
+        }
         console.error('Supabase error:', error);
         notify('❌ Ошибка сохранения: ' + error.message);
         return;
@@ -437,6 +442,8 @@ async function saveUsername() {
       console.log('✅ Пользователь добавлен в Supabase');
     } catch (error) {
       console.error('Error saving to Supabase:', error);
+      notify('❌ Ошибка: ' + error.message);
+      return;
     }
   }
   
