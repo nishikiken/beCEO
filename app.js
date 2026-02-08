@@ -241,7 +241,9 @@ function toggleLike(traceId) {
   
   saveLikes(likes);
   saveTraces();
-  renderTraces();
+  
+  // Обновляем только конкретную карточку, а не весь список
+  updateTraceCard(traceId);
 }
 
 // Проверка лайка
@@ -322,6 +324,34 @@ function pluralize(n, one, two, five) {
   if (n1 > 1 && n1 < 5) return two;
   if (n1 === 1) return one;
   return five;
+}
+
+// Обновить конкретную карточку следа
+function updateTraceCard(traceId) {
+  const trace = traces.find(t => t.id === traceId);
+  if (!trace) return;
+  
+  const cards = document.querySelectorAll('.trace-card');
+  cards.forEach(card => {
+    const likeBtn = card.querySelector('.like-btn');
+    if (!likeBtn) return;
+    
+    // Проверяем, что это нужная карточка (по тексту username)
+    const usernameEl = card.querySelector('.trace-username');
+    if (usernameEl && usernameEl.textContent === '@' + trace.username) {
+      const isLiked = isTraceLiked(trace.id);
+      
+      // Обновляем кнопку лайка
+      likeBtn.className = `like-btn ${isLiked ? 'liked' : ''}`;
+      likeBtn.innerHTML = `${isLiked ? '❤️' : '🤍'} <span>${trace.likes}</span>`;
+      
+      // Обновляем счётчик
+      const likeCount = card.querySelector('.like-count');
+      if (likeCount) {
+        likeCount.textContent = `${trace.likes} ${pluralize(trace.likes, 'лайк', 'лайка', 'лайков')}`;
+      }
+    }
+  });
 }
 
 // Экранирование HTML

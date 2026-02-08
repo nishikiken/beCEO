@@ -420,24 +420,35 @@ main {
 .trace-card {
   background: rgba(15,23,42,.7);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(56, 189, 248, 0.2);
   padding: 20px;
   border-radius: 18px;
   box-shadow: 
     0 12px 40px rgba(0,0,0,.5),
-    0 0 30px rgba(56, 189, 248, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 0 30px rgba(56, 189, 248, 0.05);
   animation: popIn .4s ease;
   transition: .25s ease;
   position: relative;
+  overflow: hidden;
+}
+
+.trace-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .trace-card:hover {
   transform: translateY(-6px) scale(1.02);
   box-shadow: 
     0 20px 60px rgba(0,0,0,.6),
-    0 0 50px rgba(56, 189, 248, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 0 50px rgba(56, 189, 248, 0.2);
   border-color: rgba(56, 189, 248, 0.5);
 }
 
