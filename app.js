@@ -215,8 +215,13 @@ function initGoogleSignIn() {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleCallback,
         auto_select: false,
-        cancel_on_tap_outside: true
+        cancel_on_tap_outside: true,
+        use_fedcm_for_prompt: false // Отключаем FedCM
       });
+      
+      // Отключаем автоматический One Tap
+      google.accounts.id.cancel();
+      
       console.log('Google Sign-In initialized successfully');
       
       // Рендерим кнопки Google (опционально)
