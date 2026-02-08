@@ -11,6 +11,10 @@
 
 <header>
   <h1>BE CEO</h1>
+  <nav id="navAuth">
+    <button onclick="openModal('loginModal')" class="auth-btn">Войти</button>
+    <button onclick="openModal('registerModal')" class="auth-btn">Регистрация</button>
+  </nav>
   <div class="user-box" id="userBox">
     <div class="avatar" id="userAvatar">👤</div>
     <span id="usernameLabel"></span>
@@ -28,6 +32,11 @@
       <button onclick="loginWithTikTok()" class="cta-btn">
         🎵 Начать с TikTok
       </button>
+      <div class="or-divider">или</div>
+      <div class="auth-buttons">
+        <button onclick="openModal('loginModal')" class="secondary-btn">Войти</button>
+        <button onclick="openModal('registerModal')" class="secondary-btn">Регистрация</button>
+      </div>
       <div class="stats-preview">
         <div class="stat-item">
           <div class="stat-value" id="totalTraces">0</div>
@@ -76,6 +85,35 @@
 <footer>BE CEO · t.me/imCEOmf · © 2026</footer>
 
 <div class="notify" id="notify"></div>
+
+<!-- Модальное окно входа -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h1 class="modal-logo">BE CEO</h1>
+      <button class="close" onclick="closeModal('loginModal')">✕</button>
+    </div>
+    <h3>Вход</h3>
+    <input id="loginUser" placeholder="Логин">
+    <input id="loginPass" type="password" placeholder="Пароль">
+    <button onclick="login()">Войти</button>
+  </div>
+</div>
+
+<!-- Модальное окно регистрации -->
+<div class="modal" id="registerModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h1 class="modal-logo">BE CEO</h1>
+      <button class="close" onclick="closeModal('registerModal')">✕</button>
+    </div>
+    <h3>Регистрация</h3>
+    <input id="registerName" placeholder="Имя">
+    <input id="registerUser" placeholder="Логин">
+    <input id="registerPass" type="password" placeholder="Пароль">
+    <button onclick="register()">Создать аккаунт</button>
+  </div>
+</div>
 
 <script src="app.js"></script>
 

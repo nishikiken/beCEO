@@ -59,7 +59,12 @@ function checkAuth() {
 
 // Показать UI для авторизованных
 function showAuthenticatedUI() {
-  document.getElementById('userBox').style.display = 'flex';
+  const navAuth = document.getElementById('navAuth');
+  if (navAuth) navAuth.style.display = 'none';
+  
+  const userBox = document.getElementById('userBox');
+  userBox.classList.add('show');
+  
   document.getElementById('usernameLabel').textContent = currentUser.username;
   
   const avatar = document.getElementById('userAvatar');
@@ -82,9 +87,108 @@ function showAuthenticatedUI() {
 
 // Показать UI для неавторизованных
 function showUnauthenticatedUI() {
-  document.getElementById('userBox').style.display = 'none';
+  const navAuth = document.getElementById('navAuth');
+  if (navAuth) navAuth.style.display = 'block';
+  
+  const userBox = document.getElementById('userBox');
+  userBox.classList.remove('show');
+  
   document.getElementById('welcomeSection').style.display = 'flex';
   document.getElementById('createTraceSection').style.display = 'none';
+}
+
+// Открыть модальное окно
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  if (tg) tg.HapticFeedback.impactOccurred('medium');
+}
+
+// Закрыть модальное окно
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  if (tg) tg.HapticFeedback.impactOccurred('light');
+}
+
+// Вход
+function login() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  
+  if (!username || !password) {
+    notify('⚠️ Заполни все поля');
+    return;
+  }
+  
+  // Демо-логика (потом заменим на реальную)
+  const savedUsers = JSON.parse(localStorage.getItem('beceo_registered_users') || '[]');
+  const user = savedUsers.find(u => u.username === username && u.password === password);
+  
+  if (user) {
+    currentUser = {
+      id: user.id,
+      username: user.username,
+      avatar: user.avatar
+    };
+    
+    localStorage.setItem('beceo_user', JSON.stringify(currentUser));
+    showAuthenticatedUI();
+    closeModal('loginModal');
+    notify('✅ Добро пожаловать, ' + username + '!');
+  } else {
+    notify('❌ Неверный логин или пароль');
+  }
+}
+
+// Регистрация
+function register() {
+  const name = document.getElementById('registerName').value.trim();
+  const username = document.getElementById('registerUser').value.trim();
+  const password = document.getElementById('registerPass').value;
+  
+  if (!name || !username || !password) {
+    notify('⚠️ Заполни все поля');
+    return;
+  }
+  
+  if (username.length < 3) {
+    notify('⚠️ Логин должен быть минимум 3 символа');
+    return;
+  }
+  
+  if (password.length < 6) {
+    notify('⚠️ Пароль должен быть минимум 6 символов');
+    return;
+  }
+  
+  // Демо-логика (потом заменим на реальную)
+  const savedUsers = JSON.parse(localStorage.getItem('beceo_registered_users') || '[]');
+  
+  if (savedUsers.find(u => u.username === username)) {
+    notify('❌ Этот логин уже занят');
+    return;
+  }
+  
+  const newUser = {
+    id: Date.now(),
+    name: name,
+    username: username,
+    password: password,
+    avatar: null
+  };
+  
+  savedUsers.push(newUser);
+  localStorage.setItem('beceo_registered_users', JSON.stringify(savedUsers));
+  
+  currentUser = {
+    id: newUser.id,
+    username: newUser.username,
+    avatar: newUser.avatar
+  };
+  
+  localStorage.setItem('beceo_user', JSON.stringify(currentUser));
+  showAuthenticatedUI();
+  closeModal('registerModal');
+  notify('🎉 Аккаунт создан! Добро пожаловать!');
 }
 
 // Авторизация через TikTok (заглушка)
@@ -353,6 +457,31 @@ function updateTraceCard(traceId) {
     }
   });
 }
+
+// Делаем функции глобальными
+window.openProfile = openProfile;
+window.closeProfile = closeProfile;
+window.createListing = createListing;
+window.closeCreateListing = closeCreateListing;
+window.publishListing = publishListing;
+window.switchProfileTab = switchProfileTab;
+window.loadMyListings = loadMyListings;
+window.deleteListing = deleteListing;
+window.openTopup = openTopup;
+window.closeTopup = closeTopup;
+window.processTopup = processTopup;
+window.selectPaymentMethod = selectPaymentMethod;
+window.closeListingDetail = closeListingDetail;
+window.calculatePurchaseFromAmount = calculatePurchaseFromAmount;
+window.calculatePurchaseFromPrice = calculatePurchaseFromPrice;
+window.purchaseWithBalance = purchaseWithBalance;
+window.purchaseWithTopup = purchaseWithTopup;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.login = login;
+window.register = register;
+window.logout = logout;
+window.loginWithTikTok = loginWithTikTok;
 
 // Экранирование HTML
 function escapeHtml(text) {
