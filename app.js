@@ -93,8 +93,8 @@ function showSplashScreen() {
         // Показываем основной контент
         document.getElementById('tracesSection').style.display = 'block';
         openModal('registerModal');
-      }, 1000);
-    }, 1100);
+      }, 800);
+    }, 800);
   });
 }
 
@@ -105,16 +105,20 @@ function createFloatingTraces(container) {
     { username: 'stevejobs', message: 'Единственный способ делать великую работу — любить то, что ты делаешь.' },
     { username: 'billgates', message: 'Успех — плохой учитель.' },
     { username: 'markzuckerberg', message: 'Двигайся быстро и ломай стереотипы.' },
-    { username: 'jeffbezos', message: 'Твой бренд — это то, что люди говорят о тебе, когда тебя нет в комнате.' }
+    { username: 'jeffbezos', message: 'Твой бренд — это то, что люди говорят о тебе, когда тебя нет в комнате.' },
+    { username: 'warrenbuffett', message: 'Цена — это то, что ты платишь. Ценность — это то, что ты получаешь.' },
+    { username: 'larrypage', message: 'Всегда работай над чем-то неудобно захватывающим.' },
+    { username: 'timcook', message: 'Пусть ценности и убеждения управляют всем, что ты делаешь.' }
   ];
   
-  // Создаём 8 следов с разными задержками
-  for (let i = 0; i < 8; i++) {
+  // Создаём 12 следов для непрерывного потока
+  for (let i = 0; i < 12; i++) {
     const trace = placeholders[i % placeholders.length];
     const card = document.createElement('div');
     card.className = 'trace-float';
     card.style.left = `${Math.random() * 80 + 10}%`;
-    card.style.animationDelay = `${i * 2}s`;
+    // Равномерное распределение задержек для непрерывного потока
+    card.style.animationDelay = `${i * 1.5}s`;
     
     card.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -195,107 +199,91 @@ function closeModal(id) {
   if (tg) tg.HapticFeedback.impactOccurred('light');
 }
 
-// Вход
-function login() {
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
+// Авторизация через Google
+function loginWithGoogle() {
+  closeModal('loginModal');
+  closeModal('registerModal');
   
-  if (!username || !password) {
-    notify('⚠️ Заполни все поля');
-    return;
-  }
+  notify('🔄 Подключение к Google...');
   
-  // Демо-логика (потом заменим на реальную)
-  const savedUsers = JSON.parse(localStorage.getItem('beceo_registered_users') || '[]');
-  const user = savedUsers.find(u => u.username === username && u.password === password);
-  
-  if (user) {
-    currentUser = {
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar
-    };
+  // Демо: симуляция Google OAuth
+  setTimeout(() => {
+    // Проверяем, есть ли уже сохраненный Google-пользователь
+    const savedGoogleUser = localStorage.getItem('beceo_google_user');
     
-    localStorage.setItem('beceo_user', JSON.stringify(currentUser));
-    showAuthenticatedUI();
-    closeModal('loginModal');
-    notify('✅ Добро пожаловать, ' + username + '!');
-  } else {
-    notify('❌ Неверный логин или пароль');
-  }
+    if (savedGoogleUser) {
+      // Пользователь уже регистрировался
+      const userData = JSON.parse(savedGoogleUser);
+      currentUser = userData;
+      localStorage.setItem('beceo_user', JSON.stringify(currentUser));
+      showAuthenticatedUI();
+      notify('✅ С возвращением, ' + userData.username + '!');
+    } else {
+      // Новый пользователь - нужно выбрать username
+      const googleId = 'google_' + Date.now();
+      const tempUser = {
+        id: googleId,
+        googleEmail: 'user@gmail.com', // В реальности придет от Google
+        avatar: null,
+        username: null
+      };
+      
+      // Сохраняем временные данные
+      sessionStorage.setItem('temp_google_user', JSON.stringify(tempUser));
+      
+      // Открываем модалку выбора username
+      openModal('usernameModal');
+    }
+  }, 1500);
 }
 
-// Регистрация
-function register() {
-  const name = document.getElementById('registerName').value.trim();
-  const username = document.getElementById('registerUser').value.trim();
-  const password = document.getElementById('registerPass').value;
+// Сохранение username после Google OAuth
+function saveUsername() {
+  const username = document.getElementById('usernameInput').value.trim();
   
-  if (!name || !username || !password) {
-    notify('⚠️ Заполни все поля');
+  if (!username) {
+    notify('⚠️ Введи username');
     return;
   }
   
   if (username.length < 3) {
-    notify('⚠️ Логин должен быть минимум 3 символа');
+    notify('⚠️ Username должен быть минимум 3 символа');
     return;
   }
   
-  if (password.length < 6) {
-    notify('⚠️ Пароль должен быть минимум 6 символов');
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    notify('⚠️ Username может содержать только буквы, цифры и _');
     return;
   }
   
-  // Демо-логика (потом заменим на реальную)
-  const savedUsers = JSON.parse(localStorage.getItem('beceo_registered_users') || '[]');
-  
-  if (savedUsers.find(u => u.username === username)) {
-    notify('❌ Этот логин уже занят');
+  // Проверяем, не занят ли username
+  const savedUsers = JSON.parse(localStorage.getItem('beceo_all_usernames') || '[]');
+  if (savedUsers.includes(username.toLowerCase())) {
+    notify('❌ Этот username уже занят');
     return;
   }
   
-  const newUser = {
-    id: Date.now(),
-    name: name,
+  // Получаем временные данные Google
+  const tempUser = JSON.parse(sessionStorage.getItem('temp_google_user'));
+  
+  // Создаем полного пользователя
+  currentUser = {
+    id: tempUser.id,
     username: username,
-    password: password,
+    googleEmail: tempUser.googleEmail,
     avatar: null
   };
   
-  savedUsers.push(newUser);
-  localStorage.setItem('beceo_registered_users', JSON.stringify(savedUsers));
-  
-  currentUser = {
-    id: newUser.id,
-    username: newUser.username,
-    avatar: newUser.avatar
-  };
-  
+  // Сохраняем
+  savedUsers.push(username.toLowerCase());
+  localStorage.setItem('beceo_all_usernames', JSON.stringify(savedUsers));
+  localStorage.setItem('beceo_google_user', JSON.stringify(currentUser));
   localStorage.setItem('beceo_user', JSON.stringify(currentUser));
-  showAuthenticatedUI();
-  closeModal('registerModal');
-  notify('🎉 Аккаунт создан! Добро пожаловать!');
-}
-
-// Авторизация через Google (заглушка)
-function loginWithGoogle() {
-  notify('🚧 Авторизация через Google находится в разработке');
-  closeModal('loginModal');
-  closeModal('registerModal');
+  sessionStorage.removeItem('temp_google_user');
   
-  // Демо авторизация для тестирования
-  setTimeout(() => {
-    const demoUser = {
-      id: Date.now(),
-      username: 'google_user_' + Math.floor(Math.random() * 1000),
-      avatar: null
-    };
-    
-    currentUser = demoUser;
-    localStorage.setItem('beceo_user', JSON.stringify(demoUser));
-    showAuthenticatedUI();
-    notify('✅ Вы успешно вошли через Google');
-  }, 1500);
+  closeModal('usernameModal');
+  showAuthenticatedUI();
+  notify('🎉 Добро пожаловать, ' + username + '!');
 }
 
 // Выход
@@ -566,10 +554,9 @@ window.purchaseWithBalance = purchaseWithBalance;
 window.purchaseWithTopup = purchaseWithTopup;
 window.openModal = openModal;
 window.closeModal = closeModal;
-window.login = login;
-window.register = register;
 window.logout = logout;
 window.loginWithGoogle = loginWithGoogle;
+window.saveUsername = saveUsername;
 
 // Экранирование HTML
 function escapeHtml(text) {

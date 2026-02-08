@@ -91,20 +91,16 @@
 
 <div class="notify" id="notify"></div>
 
-<!-- Модальное окно входа -->
+<!-- Модальное окно входа/регистрации -->
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <div class="modal-header">
       <h1 class="modal-logo">BE CEO</h1>
       <button class="close" onclick="closeModal('loginModal')">✕</button>
     </div>
-    <h3>Вход</h3>
-    <input id="loginUser" placeholder="Логин">
-    <input id="loginPass" type="password" placeholder="Пароль">
-    <button onclick="login()">Войти</button>
-    <div class="modal-divider">или</div>
+    <h3>Войти или зарегистрироваться</h3>
     <button onclick="loginWithGoogle()" class="google-modal-btn">
-      🔐 Войти через Google
+      🔐 Продолжить через Google
     </button>
   </div>
 </div>
@@ -116,15 +112,23 @@
       <h1 class="modal-logo">BE CEO</h1>
       <button class="close" onclick="closeModal('registerModal')">✕</button>
     </div>
-    <h3>Регистрация</h3>
-    <input id="registerName" placeholder="Имя">
-    <input id="registerUser" placeholder="Логин">
-    <input id="registerPass" type="password" placeholder="Пароль">
-    <button onclick="register()">Создать аккаунт</button>
-    <div class="modal-divider">или</div>
+    <h3>Добро пожаловать!</h3>
     <button onclick="loginWithGoogle()" class="google-modal-btn">
-      🔐 Регистрация через Google
+      🔐 Продолжить через Google
     </button>
+  </div>
+</div>
+
+<!-- Модальное окно выбора username -->
+<div class="modal" id="usernameModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h1 class="modal-logo">BE CEO</h1>
+    </div>
+    <h3>Выбери свой username</h3>
+    <p style="font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 16px;">Это имя будет видно всем пользователям</p>
+    <input id="usernameInput" placeholder="username" maxlength="20">
+    <button onclick="saveUsername()">Продолжить</button>
   </div>
 </div>
 
