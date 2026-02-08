@@ -755,7 +755,7 @@ main {
   /* Статичный фон без анимации */
 }
 
-/* Частицы на фоне модалки - статичные */
+/* Частицы на фоне модалки - плавная анимация */
 .modal::after {
   content: '';
   position: absolute;
@@ -769,7 +769,25 @@ main {
   pointer-events: none;
   opacity: 0.4;
   z-index: 1;
-  /* Статичные частицы без анимации */
+  animation: particleFloat1 20s ease-in-out infinite, particleFloat2 15s ease-in-out infinite reverse;
+}
+
+@keyframes particleFloat1 {
+  0%, 100% {
+    background-position: 0 0, 50px 50px, 25px 75px;
+  }
+  50% {
+    background-position: 100px 50px, 150px 100px, 75px 125px;
+  }
+}
+
+@keyframes particleFloat2 {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* Удалена анимация particleFloat - частицы теперь статичные */
