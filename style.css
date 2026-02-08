@@ -750,12 +750,12 @@ main {
     radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 10% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 35%),
     radial-gradient(circle at 90% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 35%);
-  animation: particleFloat 15s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
+  /* Статичный фон без анимации */
 }
 
-/* Частицы на фоне модалки */
+/* Частицы на фоне модалки - статичные */
 .modal::after {
   content: '';
   position: absolute;
@@ -769,16 +769,10 @@ main {
   pointer-events: none;
   opacity: 0.4;
   z-index: 1;
+  /* Статичные частицы без анимации */
 }
 
-@keyframes particleFloat {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
+/* Удалена анимация particleFloat - частицы теперь статичные */
 
 .modal.active {
   display: flex;
