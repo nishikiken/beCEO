@@ -1,5 +1,12 @@
 * { box-sizing: border-box; }
 
+@font-face {
+  font-family: 'Fortnite';
+  src: url('fortnitebattlefest.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html, body {
   margin: 0;
   min-height: 100vh;
@@ -12,24 +19,26 @@ body { display: flex; flex-direction: column; }
 
 /* ===== HEADER ===== */
 header {
-  backdrop-filter: blur(12px);
-  background: rgba(15,23,42,.55);
+  backdrop-filter: blur(20px);
+  background: rgba(15,23,42,.7);
   padding: 16px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(148,163,184,.15);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
   position: sticky;
   top: 0;
   z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 header h1 { 
   margin: 0; 
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  letter-spacing: 3px;
+  font-family: 'Fortnite', 'Rajdhani', sans-serif;
+  font-size: 38px;
+  font-weight: normal;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -166,11 +175,12 @@ main {
 }
 
 .cta-btn {
-  background: linear-gradient(135deg, #38bdf8, #06b6d4);
-  border: none;
-  color: #020617;
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
   padding: 18px 40px;
-  border-radius: 14px;
+  border-radius: 16px;
   font-size: 20px;
   font-weight: 700;
   cursor: pointer;
@@ -178,13 +188,38 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.4);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(56, 189, 248, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
+  transition: .5s;
+}
+
+.cta-btn:hover::before {
+  left: 100%;
 }
 
 .cta-btn:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(56, 189, 248, 0.6);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(56, 189, 248, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(56, 189, 248, 0.8);
+  background: rgba(15,23,42,.85);
 }
 
 .stats-preview {
@@ -195,11 +230,14 @@ main {
 }
 
 .stat-item {
-  background: rgba(15,23,42,.6);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(148,163,184,.2);
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   padding: 20px;
   border-radius: 16px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .stat-value {
@@ -223,14 +261,17 @@ main {
 }
 
 .create-box {
-  background: rgba(15,23,42,.6);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(148,163,184,.2);
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   padding: 32px;
   border-radius: 20px;
   max-width: 700px;
   margin: 0 auto 40px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,.5),
+    0 0 40px rgba(56, 189, 248, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .create-box h2 {
@@ -288,21 +329,30 @@ main {
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #38bdf8, #06b6d4);
-  border: none;
-  color: #020617;
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
   padding: 14px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: .3s ease;
-  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(56, 189, 248, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(56, 189, 248, 0.5);
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(56, 189, 248, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(56, 189, 248, 0.8);
+  background: rgba(15,23,42,.85);
 }
 
 /* ===== TRACES SECTION ===== */
@@ -331,8 +381,9 @@ main {
 }
 
 .sort-btn {
-  background: rgba(30,41,59,.5);
-  border: 1px solid rgba(148,163,184,.2);
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   color: #e5e7eb;
   padding: 8px 16px;
   border-radius: 10px;
@@ -340,16 +391,24 @@ main {
   transition: .2s ease;
   font-size: 14px;
   font-weight: 600;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .sort-btn.active {
-  background: #38bdf8;
-  color: #020617;
-  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(56, 189, 248, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .sort-btn:hover {
   transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .traces-grid {
@@ -359,12 +418,15 @@ main {
 }
 
 .trace-card {
-  background: rgba(15,23,42,.6);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(148,163,184,.2);
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   padding: 20px;
   border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,.5),
+    0 0 30px rgba(56, 189, 248, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   animation: popIn .4s ease;
   transition: .25s ease;
   position: relative;
@@ -372,8 +434,11 @@ main {
 
 .trace-card:hover {
   transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,.6),
+    0 0 50px rgba(56, 189, 248, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(56, 189, 248, 0.5);
 }
 
 .trace-header {
@@ -435,8 +500,9 @@ main {
 }
 
 .like-btn {
-  background: rgba(30,41,59,.5);
-  border: 1px solid rgba(148,163,184,.2);
+  background: rgba(15,23,42,.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   color: #e5e7eb;
   padding: 8px 16px;
   border-radius: 10px;
@@ -447,16 +513,24 @@ main {
   display: flex;
   align-items: center;
   gap: 6px;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .like-btn:hover {
   transform: scale(1.05);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .like-btn.liked {
   background: rgba(239, 68, 68, 0.2);
   border-color: rgba(239, 68, 68, 0.4);
   color: #ef4444;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(239, 68, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .like-count {
