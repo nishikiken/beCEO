@@ -117,14 +117,15 @@ function createFloatingTraces(container) {
     { username: 'timcook', message: 'Пусть ценности и убеждения управляют всем, что ты делаешь.' }
   ];
   
-  // Создаём 12 следов для непрерывного потока
-  for (let i = 0; i < 12; i++) {
+  // Создаём 15 следов для непрерывного потока (начинают сразу)
+  for (let i = 0; i < 15; i++) {
     const trace = placeholders[i % placeholders.length];
     const card = document.createElement('div');
     card.className = 'trace-float';
     card.style.left = `${Math.random() * 80 + 10}%`;
-    // Равномерное распределение задержек для непрерывного потока
-    card.style.animationDelay = `${i * 1.5}s`;
+    // Распределяем следы равномерно по всей высоте экрана для мгновенного старта
+    const delayOffset = (i * 18) / 15; // Распределяем по времени анимации
+    card.style.animationDelay = `${delayOffset}s`;
     
     card.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
