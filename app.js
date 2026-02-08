@@ -3,12 +3,16 @@ const SUPABASE_URL = 'https://hyxyablgkjtoxcxnurkk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5eHlhYmxna2p0b3hjeG51cmtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxODE5NjksImV4cCI6MjA4NDc1Nzk2OX0._3HQYSymZ2ArXIN143gAiwulCL1yt7i5fiHaTd4bp5U';
 
 // Инициализация Supabase
-let supabase = null;
-if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  console.log('✅ Supabase подключен');
-} else {
-  console.warn('⚠️ Supabase не настроен! Открой app.js и замени YOUR_SUPABASE_URL и YOUR_SUPABASE_ANON_KEY');
+let supabaseClient = null;
+try {
+  if (typeof window.supabase !== 'undefined') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase подключен');
+  } else {
+    console.warn('⚠️ Supabase SDK не загружен');
+  }
+} catch (error) {
+  console.error('Ошибка инициализации Supabase:', error);
 }
 
 // Состояние приложения
@@ -399,10 +403,10 @@ async function saveUsername() {
   };
   
   // Сохраняем в Supabase
-  if (supabase) {
+  if (supabaseClient) {
     try {
       // Проверяем, не занят ли username
-      const { data: existingUser } = await supabase
+      const { data: existingUser } = await supabaseClient
         .from('beceo_users')
         .select('username')
         .eq('username', username)
@@ -414,7 +418,7 @@ async function saveUsername() {
       }
       
       // Добавляем пользователя в базу
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('beceo_users')
         .insert({
           id: tempUser.id,
@@ -489,9 +493,9 @@ async function submitTrace() {
   };
   
   // Сохраняем в Supabase
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('beceo_traces')
         .insert({
           user_id: currentUser.id,
@@ -528,9 +532,9 @@ async function submitTrace() {
 // Загрузка следов
 async function loadTraces() {
   // Загружаем из Supabase
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('beceo_traces')
         .select('*')
         .order('created_at', { ascending: false });
