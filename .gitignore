@@ -1,0 +1,23 @@
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Dependencies (если будет Node.js)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build (если будет сборка)
+dist/
+build/

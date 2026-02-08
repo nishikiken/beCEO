@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>BE CEO - Оставь свой след</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>BE CEO</h1>
+  <nav id="navAuth">
+    <button onclick="loginWithTikTok()" class="tiktok-btn">
+      <span class="tiktok-icon">🎵</span> Войти через TikTok
+    </button>
+  </nav>
+  <div class="user-box" id="userBox">
+    <div class="avatar" id="userAvatar">👤</div>
+    <span id="usernameLabel"></span>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </div>
+</header>
+
+<main>
+  <!-- Приветственный экран для неавторизованных -->
+  <section class="welcome-section" id="welcomeSection">
+    <div class="welcome-content">
+      <div class="welcome-icon">🚀</div>
+      <h2>Оставь свой цифровой след</h2>
+      <p>Присоединяйся к сообществу лидеров. Поделись своей историей, вдохнови других.</p>
+      <button onclick="loginWithTikTok()" class="cta-btn">
+        <span class="tiktok-icon">🎵</span> Начать с TikTok
+      </button>
+      <div class="stats-preview">
+        <div class="stat-item">
+          <div class="stat-value" id="totalTraces">0</div>
+          <div class="stat-label">Следов оставлено</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="totalLikes">0</div>
+          <div class="stat-label">Лайков поставлено</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Форма создания следа (только для авторизованных без следа) -->
+  <section class="create-trace-section" id="createTraceSection" style="display: none;">
+    <div class="create-box">
+      <h2>Оставь свой след в истории</h2>
+      <p class="hint">Ты можешь оставить только один след. Подумай хорошо, что хочешь сказать миру.</p>
+      
+      <div class="form-field">
+        <label>Твоя фраза</label>
+        <textarea id="traceMessage" placeholder="Напиши что-то вдохновляющее..." maxlength="280" rows="4"></textarea>
+        <div class="char-counter"><span id="charCount">0</span>/280</div>
+      </div>
+      
+      <button onclick="submitTrace()" class="submit-btn">🚀 Оставить след</button>
+    </div>
+  </section>
+
+  <!-- Лента следов -->
+  <section class="traces-section" id="tracesSection">
+    <div class="section-header">
+      <h2>Цифровые следы</h2>
+      <div class="sort-buttons">
+        <button class="sort-btn active" onclick="sortBy('recent')">🕐 Новые</button>
+        <button class="sort-btn" onclick="sortBy('top')">🔥 Топ</button>
+      </div>
+    </div>
+    
+    <div class="traces-grid" id="tracesGrid">
+      <!-- Карточки следов будут здесь -->
+    </div>
+  </section>
+</main>
+
+<footer>BE CEO · Оставь свой след · © 2026</footer>
+
+<div class="notify" id="notify"></div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
