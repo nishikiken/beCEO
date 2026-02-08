@@ -160,11 +160,42 @@ function createFloatingTraces(container) {
   }
 }
 
+// Показать экран бана
+function showBanScreen() {
+  document.getElementById('banScreen').style.display = 'flex';
+  // Скрываем весь остальной контент
+  document.getElementById('welcomeSection').style.display = 'none';
+  document.getElementById('createTraceSection').style.display = 'none';
+  document.getElementById('tracesSection').style.display = 'none';
+  document.querySelector('header').style.display = 'none';
+  document.querySelector('footer').style.display = 'none';
+}
+
 // Проверка авторизации
-function checkAuth() {
+async function checkAuth() {
   const savedUser = localStorage.getItem('beceo_user');
   if (savedUser) {
     currentUser = JSON.parse(savedUser);
+    
+    // Проверяем бан в Supabase
+    if (supabaseClient && currentUser.id) {
+      try {
+        const { data: user, error } = await supabaseClient
+          .from('beceo_users')
+          .select('is_banned')
+          .eq('google_id', currentUser.id)
+          .maybeSingle();
+        
+        if (user && user.is_banned) {
+          console.log('❌ Пользователь забанен');
+          showBanScreen();
+          return;
+        }
+      } catch (error) {
+        console.error('Ошибка проверки бана:', error);
+      }
+    }
+    
     showAuthenticatedUI();
   } else {
     showUnauthenticatedUI();
@@ -273,7 +304,7 @@ function initGoogleSignIn() {
 }
 
 // Обработчик Google OAuth callback
-function handleGoogleCallback(response) {
+async function handleGoogleCallback(response) {
   try {
     // Декодируем JWT токен
     const userInfo = parseJwt(response.credential);
@@ -286,6 +317,28 @@ function handleGoogleCallback(response) {
     if (savedGoogleUsers[userInfo.sub]) {
       // Пользователь уже регистрировался
       const userData = savedGoogleUsers[userInfo.sub];
+      
+      // Проверяем бан в Supabase
+      if (supabaseClient) {
+        try {
+          const { data: user, error } = await supabaseClient
+            .from('beceo_users')
+            .select('is_banned, username')
+            .eq('google_id', userInfo.sub)
+            .maybeSingle();
+          
+          if (user && user.is_banned) {
+            console.log('❌ Пользователь забанен');
+            showBanScreen();
+            closeModal('loginModal');
+            closeModal('registerModal');
+            return;
+          }
+        } catch (error) {
+          console.error('Ошибка проверки бана:', error);
+        }
+      }
+      
       currentUser = userData;
       localStorage.setItem('beceo_user', JSON.stringify(currentUser));
       
