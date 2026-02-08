@@ -730,9 +730,10 @@ main {
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 16px;
+  position: relative;
 }
 
 .modal-logo {
@@ -854,6 +855,9 @@ main {
   width: auto !important;
   margin: 0 !important;
   transition: .2s ease;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .close:hover {

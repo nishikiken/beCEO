@@ -196,13 +196,11 @@ function showUnauthenticatedUI() {
 // Открыть модальное окно
 function openModal(id) {
   document.getElementById(id).classList.add('active');
-  if (tg) tg.HapticFeedback.impactOccurred('medium');
 }
 
 // Закрыть модальное окно
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
-  if (tg) tg.HapticFeedback.impactOccurred('light');
 }
 
 // Инициализация Google Sign-In
