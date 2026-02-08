@@ -383,7 +383,8 @@ function saveUsername() {
     id: tempUser.id,
     username: username,
     googleEmail: tempUser.googleEmail,
-    avatar: null
+    googleName: tempUser.googleName,
+    avatar: tempUser.googlePicture
   };
   
   // Сохраняем
