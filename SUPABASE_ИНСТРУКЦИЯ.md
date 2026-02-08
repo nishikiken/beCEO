@@ -9,13 +9,24 @@
 
 ## Шаг 2: Скопируй и вставь SQL код
 
+⚠️ **ВАЖНО:** Этот код удалит старые таблицы (если есть) и создаст новые!
+
 Скопируй **ВЕСЬ** код ниже (Ctrl+A в этом блоке, потом Ctrl+C):
 
 ```sql
 -- BE CEO Database Schema для Supabase
 
+-- УДАЛЯЕМ СТАРЫЕ ТАБЛИЦЫ (если есть)
+DROP TABLE IF EXISTS likes CASCADE;
+DROP TABLE IF EXISTS traces CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Удаляем старые функции
+DROP FUNCTION IF EXISTS update_trace_likes() CASCADE;
+DROP FUNCTION IF EXISTS get_stats() CASCADE;
+
 -- Таблица пользователей
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
   id TEXT PRIMARY KEY,
   google_id TEXT UNIQUE NOT NULL,
   username TEXT UNIQUE NOT NULL,
@@ -27,7 +38,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Таблица следов (постов)
-CREATE TABLE IF NOT EXISTS traces (
+CREATE TABLE traces (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   username TEXT NOT NULL,
@@ -37,7 +48,7 @@ CREATE TABLE IF NOT EXISTS traces (
 );
 
 -- Таблица лайков
-CREATE TABLE IF NOT EXISTS likes (
+CREATE TABLE likes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   trace_id UUID REFERENCES traces(id) ON DELETE CASCADE,
@@ -46,12 +57,12 @@ CREATE TABLE IF NOT EXISTS likes (
 );
 
 -- Индексы для производительности
-CREATE INDEX IF NOT EXISTS idx_traces_created_at ON traces(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_traces_likes ON traces(likes DESC);
-CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
-CREATE INDEX IF NOT EXISTS idx_likes_trace_id ON likes(trace_id);
-CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
-CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX idx_traces_created_at ON traces(created_at DESC);
+CREATE INDEX idx_traces_likes ON traces(likes DESC);
+CREATE INDEX idx_likes_user_id ON likes(user_id);
+CREATE INDEX idx_likes_trace_id ON likes(trace_id);
+CREATE INDEX idx_users_google_id ON users(google_id);
+CREATE INDEX idx_users_username ON users(username);
 
 -- Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
