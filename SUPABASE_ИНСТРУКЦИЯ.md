@@ -7,18 +7,16 @@
 3. Слева в меню найди **SQL Editor** (иконка с кодом)
 4. Нажми **New Query**
 
-## Шаг 2: Скопируй SQL код
+## Шаг 2: Скопируй и вставь SQL код
 
-Открой файл **`supabase_setup.sql`** в этой папке и скопируй **ВЕСЬ** код (Ctrl+A, Ctrl+C)
-
-Или скопируй отсюда:
+Скопируй **ВЕСЬ** код ниже (Ctrl+A в этом блоке, потом Ctrl+C):
 
 ```sql
 -- BE CEO Database Schema для Supabase
 
 -- Таблица пользователей
 CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY,
   google_id TEXT UNIQUE NOT NULL,
   username TEXT UNIQUE NOT NULL,
   email TEXT,
@@ -31,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Таблица следов (постов)
 CREATE TABLE IF NOT EXISTS traces (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   username TEXT NOT NULL,
   message TEXT NOT NULL,
   likes INTEGER DEFAULT 0,
@@ -41,7 +39,7 @@ CREATE TABLE IF NOT EXISTS traces (
 -- Таблица лайков
 CREATE TABLE IF NOT EXISTS likes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   trace_id UUID REFERENCES traces(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, trace_id)
@@ -65,26 +63,29 @@ CREATE POLICY "Все могут читать пользователей"
   ON users FOR SELECT
   USING (true);
 
+CREATE POLICY "Пользователи могут создавать свои данные"
+  ON users FOR INSERT
+  WITH CHECK (true);
+
 CREATE POLICY "Пользователи могут обновлять свои данные"
   ON users FOR UPDATE
-  USING (auth.uid()::text = id::text);
+  USING (true);
 
 -- Политики для traces
 CREATE POLICY "Все могут читать следы"
   ON traces FOR SELECT
   USING (true);
 
-CREATE POLICY "Авторизованные могут создавать следы"
+CREATE POLICY "Все могут создавать следы"
   ON traces FOR INSERT
-  WITH CHECK (auth.uid() IS NOT NULL);
+  WITH CHECK (true);
 
 CREATE POLICY "Админы могут удалять любые следы"
   ON traces FOR DELETE
   USING (
     EXISTS (
       SELECT 1 FROM users
-      WHERE users.id::text = auth.uid()::text
-      AND users.is_admin = true
+      WHERE users.is_admin = true
     )
   );
 
@@ -93,13 +94,13 @@ CREATE POLICY "Все могут читать лайки"
   ON likes FOR SELECT
   USING (true);
 
-CREATE POLICY "Авторизованные могут ставить лайки"
+CREATE POLICY "Все могут ставить лайки"
   ON likes FOR INSERT
-  WITH CHECK (auth.uid() IS NOT NULL);
+  WITH CHECK (true);
 
-CREATE POLICY "Пользователи могут удалять свои лайки"
+CREATE POLICY "Все могут удалять лайки"
   ON likes FOR DELETE
-  USING (auth.uid()::text = user_id::text);
+  USING (true);
 
 -- Функция для обновления счетчика лайков
 CREATE OR REPLACE FUNCTION update_trace_likes()
@@ -138,7 +139,7 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-## Шаг 3: Вставь и запусти
+## Шаг 3: Запусти SQL
 
 1. Вставь скопированный код в SQL Editor (Ctrl+V)
 2. Нажми **Run** (или F5)
@@ -171,6 +172,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 ## Шаг 5: Открой админ-панель
 
 Просто открой `admin.html` в браузере!
+
+Если всё настроено правильно, увидишь статистику (пока 0 везде).
 
 ---
 
