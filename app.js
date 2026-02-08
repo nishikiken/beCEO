@@ -205,13 +205,24 @@ function closeModal(id) {
 
 // Инициализация Google Sign-In
 function initGoogleSignIn() {
+  console.log('Initializing Google Sign-In...');
+  
   if (typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCallback,
-      auto_select: false,
-      cancel_on_tap_outside: true
-    });
+    try {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCallback,
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      console.log('Google Sign-In initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Google Sign-In:', error);
+    }
+  } else {
+    console.warn('Google Sign-In library not loaded yet');
+    // Попробуем еще раз через секунду
+    setTimeout(initGoogleSignIn, 1000);
   }
 }
 
@@ -271,16 +282,36 @@ function loginWithGoogle() {
   closeModal('loginModal');
   closeModal('registerModal');
   
+  console.log('loginWithGoogle called');
+  console.log('google object:', typeof google);
+  
   // Запускаем Google Sign-In
-  if (typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        notify('⚠️ Не удалось открыть окно Google. Попробуй еще раз.');
-      } else if (notification.isSkippedMoment()) {
-        notify('⚠️ Авторизация отменена');
-      }
-    });
+  if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    console.log('Google Sign-In available, calling prompt...');
+    
+    try {
+      google.accounts.id.prompt((notification) => {
+        console.log('Prompt notification:', notification);
+        
+        if (notification.isNotDisplayed()) {
+          console.error('Prompt not displayed:', notification.getNotDisplayedReason());
+          notify('⚠️ Не удалось открыть окно Google: ' + notification.getNotDisplayedReason());
+        } else if (notification.isSkippedMoment()) {
+          console.log('Prompt skipped');
+          notify('⚠️ Авторизация отменена');
+        }
+      });
+    } catch (error) {
+      console.error('Error calling google.accounts.id.prompt:', error);
+      notify('❌ Ошибка: ' + error.message);
+    }
   } else {
+    console.error('Google Sign-In not loaded');
+    console.log('Available:', {
+      google: typeof google,
+      accounts: typeof google?.accounts,
+      id: typeof google?.accounts?.id
+    });
     notify('❌ Google Sign-In не загружен. Перезагрузи страницу.');
   }
 }
