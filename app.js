@@ -371,22 +371,37 @@ function loginWithGoogle() {
   }
 }
 
+// Показать ошибку в модалке username
+function showUsernameError(message) {
+  const errorDiv = document.getElementById('usernameError');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  
+  // Скрыть через 5 секунд
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
 // Сохранение username после Google OAuth
 async function saveUsername() {
   const username = document.getElementById('usernameInput').value.trim();
   
+  // Скрываем предыдущую ошибку
+  document.getElementById('usernameError').style.display = 'none';
+  
   if (!username) {
-    notify('⚠️ Введи username');
+    showUsernameError('⚠️ Введи username');
     return;
   }
   
   if (username.length < 3) {
-    notify('⚠️ Username должен быть минимум 3 символа');
+    showUsernameError('⚠️ Username должен быть минимум 3 символа');
     return;
   }
   
   if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    notify('⚠️ Username может содержать только буквы, цифры и _');
+    showUsernameError('⚠️ Username может содержать только буквы, цифры и _');
     return;
   }
   
@@ -413,7 +428,7 @@ async function saveUsername() {
         .maybeSingle();
       
       if (existingUser) {
-        notify('❌ Этот username уже занят');
+        showUsernameError('❌ Этот username уже занят');
         return;
       }
       
@@ -431,18 +446,18 @@ async function saveUsername() {
       if (error) {
         // Проверяем на дубликат username (unique constraint)
         if (error.code === '23505') {
-          notify('❌ Этот username уже занят');
+          showUsernameError('❌ Этот username уже занят');
           return;
         }
         console.error('Supabase error:', error);
-        notify('❌ Ошибка сохранения: ' + error.message);
+        showUsernameError('❌ Ошибка сохранения: ' + error.message);
         return;
       }
       
       console.log('✅ Пользователь добавлен в Supabase');
     } catch (error) {
       console.error('Error saving to Supabase:', error);
-      notify('❌ Ошибка: ' + error.message);
+      showUsernameError('❌ Ошибка: ' + error.message);
       return;
     }
   }
