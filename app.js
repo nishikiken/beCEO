@@ -185,13 +185,13 @@ function showAuthenticatedUI() {
 // Показать UI для неавторизованных
 function showUnauthenticatedUI() {
   const navAuth = document.getElementById('navAuth');
-  if (navAuth) navAuth.style.display = 'block';
+  if (navAuth) navAuth.style.display = 'flex';
   
   const userBox = document.getElementById('userBox');
   userBox.classList.remove('show');
   
-  // Скрываем welcome section когда пользователь не авторизован
-  document.getElementById('welcomeSection').style.display = 'none';
+  // Показываем welcome section с статистикой
+  document.getElementById('welcomeSection').style.display = 'flex';
   document.getElementById('createTraceSection').style.display = 'none';
 }
 
